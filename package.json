@@ -6,7 +6,7 @@
   "author": "gushen",
   "license": "MIT",
   "description": "simple naraka",
-  "type": "module",
+  "type": "commonjs",
   "scripts": {
     "dev": "vite",
     "build": "vue-tsc -b && vite build",
@@ -15,14 +15,24 @@
     "start": "concurrently \"npm run dev\" \"npm run electron\""
   },
   "dependencies": {
+    "axios": "^1.7.2",
     "concurrently": "^8.2.2",
-    "vue": "^3.4.31"
+    "electron": "^31.3.0",
+    "element-plus": "^2.7.7",
+    "path": "^0.12.7",
+    "pinia": "^2.1.7",
+    "prettier": "^3.3.3",
+    "vue": "^3.4.31",
+    "vue-router": "latest"
   },
   "devDependencies": {
+    "@types/node": "^20.14.12",
     "@vitejs/plugin-vue": "^5.0.5",
     "electron": "^31.2.1",
     "prettier": "^3.3.3",
     "typescript": "^5.2.2",
+    "unplugin-auto-import": "^0.18.2",
+    "unplugin-vue-components": "^0.27.3",
     "vite": "^5.3.4",
     "vue-tsc": "^2.0.24"
   }

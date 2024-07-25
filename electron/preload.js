@@ -1,18 +1,18 @@
-import {contextBridge} from "electron"
+const { contextBridge } = require("electron");
 
-window.addEventListener('DOMContentLoaded', () => {
+window.addEventListener("DOMContentLoaded", () => {
   const replaceText = (selector, text) => {
-    const element = document.getElementById(selector)
-    if (element) element.innerText = text
-  }
+    const element = document.getElementById(selector);
+    if (element) element.innerText = text;
+  };
 
-  for (const dependency of ['chrome', 'node', 'electron']) {
-    replaceText(`${dependency}-version`, process.versions[dependency])
+  for (const dependency of ["chrome", "node", "electron"]) {
+    replaceText(`${dependency}-version`, process.versions[dependency]);
   }
-})
+});
 
-contextBridge.exposeInMainWorld('electronAPI', {
+contextBridge.exposeInMainWorld("electronAPI", {
   NODE_VERSION: process.versions.node,
   CHROME_VERSION: process.versions.chrome,
-  ELECTRON_VERSION: process.versions.electron
-})
+  ELECTRON_VERSION: process.versions.electron,
+});
