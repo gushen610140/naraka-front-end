@@ -1,0 +1,29 @@
+{
+  "name": "naraka-front-end",
+  "private": true,
+  "version": "0.0.1",
+  "main": "electron/main.js",
+  "author": "gushen",
+  "license": "MIT",
+  "description": "simple naraka",
+  "type": "module",
+  "scripts": {
+    "dev": "vite",
+    "build": "vue-tsc -b && vite build",
+    "preview": "vite preview",
+    "electron": "electron .",
+    "start": "concurrently \"npm run dev\" \"npm run electron\""
+  },
+  "dependencies": {
+    "concurrently": "^8.2.2",
+    "vue": "^3.4.31"
+  },
+  "devDependencies": {
+    "@vitejs/plugin-vue": "^5.0.5",
+    "electron": "^31.2.1",
+    "prettier": "^3.3.3",
+    "typescript": "^5.2.2",
+    "vite": "^5.3.4",
+    "vue-tsc": "^2.0.24"
+  }
+}
