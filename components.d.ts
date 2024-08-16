@@ -7,8 +7,15 @@ export {}
 /* prettier-ignore */
 declare module 'vue' {
   export interface GlobalComponents {
+    CreateGameFormUI: typeof import('./src/components/UI/CreateGameFormUI.vue')['default']
     ElMenu: typeof import('element-plus/es')['ElMenu']
     ElMenuItem: typeof import('element-plus/es')['ElMenuItem']
+    GameCardUI: typeof import('./src/components/UI/GameCardUI.vue')['default']
+    GameListComp: typeof import('./src/components/GameListComp.vue')['default']
+    GoBackButtonUI: typeof import('./src/components/UI/GoBackButtonUI.vue')['default']
+    GoBackPrePage: typeof import('./src/components/UI/GoBackPrePage.vue')['default']
+    NextStepButtonUI: typeof import('./src/components/UI/NextStepButtonUI.vue')['default']
+    PlayerShowCardUI: typeof import('./src/components/UI/PlayerShowCardUI.vue')['default']
     RouterLink: typeof import('vue-router')['RouterLink']
     RouterView: typeof import('vue-router')['RouterView']
   }

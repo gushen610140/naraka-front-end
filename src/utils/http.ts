@@ -1,59 +1,21 @@
-import axios from "axios";
-import { devServerPath } from "./common.ts";
+import axios, { AxiosRequestConfig } from "axios";
 
-const http = axios.create({
-  baseURL: devServerPath,
-  timeout: 10000,
+const instance = axios.create({
+  baseURL: import.meta.env.VITE_DEV_SERVER,
 });
 
-export function get<T>(url: string, params = {}): Promise<Result<T>> {
-  return new Promise((resolve, reject) => {
-    http
-      .get(url, { params })
-      .then((response) => {
-        resolve(response.data as Result<T>);
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
-}
+instance.interceptors.request.use((config) => {
+  const token = localStorage.getItem("token");
+  if (token) {
+    config.headers["token"] = token;
+  }
+  // 最后返回 config
+  return config;
+});
 
-export function post<T>(url: string, data = {}) {
-  return new Promise((resolve, reject) => {
-    http
-      .post(url, data)
-      .then((response) => {
-        resolve(response.data as Result<T>);
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
-}
+const http = async <T>(config: AxiosRequestConfig): Promise<Result<T>> => {
+  const { data } = await instance.request<Result<T>>(config);
+  return data;
+};
 
-export function put<T>(url: string, data = {}) {
-  return new Promise((resolve, reject) => {
-    http
-      .put(url, data)
-      .then((response) => {
-        resolve(response.data as Result<T>);
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
-}
-
-export function del<T>(url: string) {
-  return new Promise((resolve, reject) => {
-    http
-      .delete(url)
-      .then((response) => {
-        resolve(response.data as Result<T>);
-      })
-      .catch((error) => {
-        reject(error);
-      });
-  });
-}
+export default http;

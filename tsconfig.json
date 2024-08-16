@@ -9,12 +9,6 @@
     }
   ],
   "compilerOptions": {
-    "baseUrl": ".",
-    "paths": {
-      "@/*": [
-        "./src/*"
-      ]
-    },
     "types": ["vue/ref-macros", "vue/runtime-dom"]
   },
   "include": [

@@ -7,6 +7,7 @@ const createWindow = () => {
     height: 960,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
+      webSecurity: false, // 前端跨域
     },
   });
 

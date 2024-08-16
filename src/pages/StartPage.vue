@@ -1,23 +1,14 @@
 <script lang="ts" setup>
-import { onMounted } from "vue";
-import { getSessionAPI } from "@/services/session.ts";
-
-onMounted(() => {
-  getSessionAPI().then((res: Result<Session[]>) => {
-    console.log(res);
-  });
-});
+import { changePage } from "@/utils/page.ts";
 </script>
 
 <template>
-  <h1>Naraka</h1>
-  <div class="create btn">Create a Game</div>
-  <div class="join btn">Join a Game</div>
+  <div class="flex flex-col gap-6">
+    <v-btn size="x-large" text="创建游戏" @click="changePage('/create_game')"></v-btn>
+    <v-btn size="x-large" text="加入游戏" @click="changePage('/join_game')"></v-btn>
+    <v-btn size="x-large" text="设置"></v-btn>
+    <v-btn size="x-large" text="退出"></v-btn>
+  </div>
 </template>
 
-<style scoped>
-.btn {
-  margin: 2rem 0;
-  cursor: pointer;
-}
-</style>
+<style scoped></style>
