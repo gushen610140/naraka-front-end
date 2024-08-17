@@ -3,7 +3,7 @@ import { createMemoryHistory, createRouter } from "vue-router";
 const routes = [
   {
     path: "/",
-    component: () => import("@/pages/StartPage.vue"),
+    component: () => import("@/pages/HomePage.vue"),
   },
   {
     path: "/join_game",

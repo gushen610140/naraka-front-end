@@ -9,3 +9,13 @@ export const addPlayerAPI = (nickname: string) => {
     },
   });
 };
+
+export const getPlayerAPI = (id: string) => {
+  return http<Player>({
+    url: "/player/get",
+    method: "get",
+    params: {
+      id,
+    },
+  });
+};
