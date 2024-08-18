@@ -3,7 +3,7 @@ import { ref } from "vue";
 import { addPlayerAPI } from "@/api/PlayerAPI.ts";
 import { addWaitRoomAPI } from "@/api/WaitRoomAPI.ts";
 import { changePage } from "@/utils/page.ts";
-import { useWaitRoomStore } from "@/store";
+import { usePlayerStore, useWaitRoomStore } from "@/store";
 
 const useForm = () => {
   const form = ref({
@@ -33,13 +33,14 @@ const useForm = () => {
     if (valid) {
       loading.value = true;
       const { data: player_1_id } = await addPlayerAPI(form.value.player_name);
+      await usePlayerStore().setPlayer(player_1_id);
       const { data: wait_room_id } = await addWaitRoomAPI(player_1_id, form.value.room_name);
       await useWaitRoomStore().setWaitRoom(wait_room_id);
       // 拟造加载效果，突显游戏体量
       setTimeout(() => {
         loading.value = false;
         changePage("/wait_game");
-      }, 1000);
+      }, 500);
     }
   };
 

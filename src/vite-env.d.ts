@@ -2,7 +2,8 @@
 
 interface ImportMetaEnv {
   readonly VITE_DEV_SERVER: string;
-  // more env variables...
+  readonly VITE_SOCKET_API_SERVER: string;
+  readonly VITE_SOCKET_SERVER: string;
 }
 
 interface ImportMeta {

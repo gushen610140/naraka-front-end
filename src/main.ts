@@ -8,22 +8,26 @@ import "vuetify/styles";
 import * as components from "vuetify/components";
 import * as directives from "vuetify/directives";
 import { mdi } from "vuetify/iconsets/mdi";
-
-const vuetify = createVuetify({
-  components,
-  directives,
-  icons: {
-    defaultSet: "mdi",
-    sets: {
-      mdi,
-    },
-  },
-});
+import "@mdi/font/css/materialdesignicons.css";
+import Toast from "vue-toastification";
+import "vue-toastification/dist/index.css";
 
 const app = createApp(App);
 
 app
-  .use(router as any)
-  .use(createPinia() as any)
-  .use(vuetify as any)
+  .use(router)
+  .use(createPinia())
+  .use(
+    createVuetify({
+      components,
+      directives,
+      icons: {
+        defaultSet: "mdi",
+        sets: {
+          mdi,
+        },
+      },
+    }),
+  )
+  .use(Toast)
   .mount("#app");

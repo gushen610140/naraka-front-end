@@ -1,27 +1,71 @@
 <script lang="ts" setup>
 import { useWaitRoomStore } from "@/store";
-import { computed, ref } from "vue";
+import { computed, onMounted, ref } from "vue";
+import io from "socket.io-client";
 import { getPlayerAPI } from "@/api/PlayerAPI.ts";
+import { useToast } from "vue-toastification";
 
 const useWaitRoomInfo = () => {
   const waitRoom = computed(() => useWaitRoomStore().getWaitRoom());
-  const player_1 = ref<Player>();
-  const player_2 = ref<Player>();
 
-  if (waitRoom.value != undefined) {
-    getPlayerAPI(waitRoom.value.player_1_id).then((res) => {
-      player_1.value = res.data;
-    });
-  }
+  const flashWaitRoomInfoEvent = async () => {
+    await useWaitRoomStore().setWaitRoom(waitRoom.value?.id as string);
+  };
 
   return {
     waitRoom,
-    player_1,
-    player_2,
+    flashWaitRoomInfoEvent,
   };
 };
 
-const { waitRoom, player_1, player_2 } = useWaitRoomInfo();
+const usePlayerInfo = () => {
+  const player_1 = ref<Player>();
+  const player_2 = ref<Player>();
+
+  const flashPlayerInfoEvent = async () => {
+    const { data: player_1_data } = await getPlayerAPI(waitRoom.value?.player_1_id as string);
+    const { data: player_2_data } = await getPlayerAPI(waitRoom.value?.player_2_id as string);
+    player_1.value = player_1_data;
+    player_2.value = player_2_data;
+  };
+
+  return {
+    player_1,
+    player_2,
+    flashPlayerInfoEvent,
+  };
+};
+
+const useSocket = () => {
+  const createSocketConnection = () => {
+    useToast().info("正在连接到服务器");
+    const socket = io("ws://localhost");
+
+    socket.on("connect", () => {
+      useToast().success("连接服务器成功");
+    });
+
+    socket.on("player_update", async () => {
+      useToast().info("新玩家加入房间");
+      await flashWaitRoomInfoEvent();
+      await flashPlayerInfoEvent();
+    });
+  };
+
+  return {
+    createSocketConnection,
+  };
+};
+
+const { waitRoom, flashWaitRoomInfoEvent } = useWaitRoomInfo();
+const { player_1, player_2, flashPlayerInfoEvent } = usePlayerInfo();
+const { createSocketConnection } = useSocket();
+
+onMounted(() => {
+  createSocketConnection();
+  flashWaitRoomInfoEvent();
+  flashPlayerInfoEvent();
+});
 </script>
 
 <template>

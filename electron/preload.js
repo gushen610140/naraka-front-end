@@ -1,4 +1,5 @@
 const { contextBridge } = require("electron");
+const { app } = require("electron");
 
 window.addEventListener("DOMContentLoaded", () => {
   const replaceText = (selector, text) => {
@@ -15,4 +16,5 @@ contextBridge.exposeInMainWorld("electronAPI", {
   NODE_VERSION: process.versions.node,
   CHROME_VERSION: process.versions.chrome,
   ELECTRON_VERSION: process.versions.electron,
+  app: app,
 });
