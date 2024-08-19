@@ -17,6 +17,10 @@ const routes = [
     path: "/wait_game",
     component: () => import("@/pages/WaitGamePage.vue"),
   },
+  {
+    path: "/game",
+    component: () => import("@/pages/GamePage.vue"),
+  },
 ];
 
 export const router = createRouter({

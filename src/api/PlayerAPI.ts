@@ -19,3 +19,21 @@ export const getPlayerAPI = (id: string) => {
     },
   });
 };
+
+export const updateStatusAPI = (id: string, status: string) => {
+  return http<boolean>({
+    url: "/player/change",
+    method: "put",
+    params: {
+      id,
+      status,
+    },
+  });
+};
+
+export const updateStatusNetworkAPI = () => {
+  return http({
+    url: import.meta.env.VITE_SOCKET_API_SERVER + "/status",
+    method: "put",
+  });
+};

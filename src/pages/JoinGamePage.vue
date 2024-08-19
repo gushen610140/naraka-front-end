@@ -36,7 +36,7 @@ const useRoomList = () => {
   const flashWaitRoomListEvent = () => {
     getWaitRoomListAPI().then((res) => {
       waitRoomList.value = res.data;
-      useToast().success(res.message);
+      useToast().success(res.message, { timeout: 3000 });
     });
   };
 
