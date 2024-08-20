@@ -37,3 +37,39 @@ export const updateStatusNetworkAPI = () => {
     method: "put",
   });
 };
+
+export const updateAttackAPI = (
+  player_me_id: string,
+  player_opponent_id: string,
+  chosen_action: number,
+  session_id: string,
+) => {
+  return http<boolean>({
+    url: "/player/attack",
+    method: "put",
+    params: {
+      player_me_id,
+      player_opponent_id,
+      chosen_action,
+      session_id,
+    },
+  });
+};
+
+export const updateAttackNetWorkAPI = (player_status_result: PlayerStatusResult) => {
+  return http({
+    url: import.meta.env.VITE_SOCKET_API_SERVER + "/attack",
+    method: "put",
+    data: player_status_result,
+  });
+};
+
+export const attackComputeAPI = (session_id: string) => {
+  return http<PlayerStatusResult>({
+    url: "/player/attack_compute",
+    method: "put",
+    params: {
+      session_id,
+    },
+  });
+};

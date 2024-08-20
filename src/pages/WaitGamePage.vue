@@ -1,10 +1,12 @@
 <script lang="ts" setup>
-import { usePlayerStore, useSocketStore, useWaitRoomStore } from "@/store";
+import { usePlayerStore, useSessionStore, useSocketStore, useWaitRoomStore } from "@/store";
 import { computed, onMounted, ref } from "vue";
 import io from "socket.io-client";
 import { getPlayerAPI, updateStatusAPI, updateStatusNetworkAPI } from "@/api/PlayerAPI.ts";
 import { useToast } from "vue-toastification";
 import { changePage } from "@/utils/page.ts";
+import { addSessionAPI, getSessionByWaitRoomIdAPI } from "@/api/SessionAPI.ts";
+import { removeWaitRoomAPI } from "@/api/WaitRoomAPI.ts";
 
 const useWaitRoomInfo = () => {
   const waitRoom = computed(() => useWaitRoomStore().getWaitRoom());
@@ -48,13 +50,23 @@ const useSocket = () => {
 
     socket.on("player_update", async () => {
       useToast().info("新玩家加入房间", { timeout: 3000 });
-      await flashWaitRoomInfoEvent();
-      await flashPlayerInfoEvent();
+      try {
+        await flashWaitRoomInfoEvent();
+        await flashPlayerInfoEvent();
+      } catch (e) {
+        await flashWaitRoomInfoEvent();
+        await flashPlayerInfoEvent();
+      }
     });
 
     socket.on("status_update", async () => {
-      await flashPlayerInfoEvent();
-      await checkReadyStatus();
+      try {
+        await flashPlayerInfoEvent();
+        await checkReadyStatus();
+      } catch (e) {
+        await flashPlayerInfoEvent();
+        await checkReadyStatus();
+      }
     });
   };
 
@@ -136,11 +148,29 @@ const useStartGame = () => {
     }
   };
 
-  const gameStart = () => {
-    if (player_1.value?.status == "ready" && player_2.value?.status == "ready") {
+  const gameStart = async () => {
+    const createOrJoinSession = async () => {
+      const { data: session } = await getSessionByWaitRoomIdAPI(waitRoom.value!.id);
+      if (session == null) {
+        const { data: id } = await addSessionAPI(
+          waitRoom.value!.player_1_id,
+          waitRoom.value!.player_2_id,
+          waitRoom.value!.id,
+        );
+        await useSessionStore().initSession(id);
+      } else {
+        await useSessionStore().initSession(session.id);
+      }
+      await removeWaitRoomAPI(waitRoom.value!.id);
       changePage("/game");
-    } else {
-      useToast().error("有玩家未准备，无法开始游戏，请重新准备");
+    };
+
+    if (player_1.value?.status == "ready" && player_2.value?.status == "ready") {
+      try {
+        await createOrJoinSession();
+      } catch (e) {
+        await createOrJoinSession();
+      }
     }
   };
 

@@ -48,3 +48,13 @@ export const joinWaitRoomAPI = (id: string, player_2_id: string) => {
     },
   });
 };
+
+export const removeWaitRoomAPI = (id: string) => {
+  return http({
+    url: "/wait_room/remove",
+    method: "delete",
+    params: {
+      id,
+    },
+  });
+};

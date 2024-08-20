@@ -24,11 +24,7 @@ const useForm = () => {
 
   const loading = ref(false);
 
-  const submit = async (
-    event: Promise<{
-      valid: boolean;
-    }>,
-  ) => {
+  const submit = async (event: Promise<{ valid: boolean }>) => {
     const { valid } = await event;
     if (valid) {
       loading.value = true;

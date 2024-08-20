@@ -3,6 +3,7 @@ import { ref } from "vue";
 import { getWaitRoomAPI } from "@/api/WaitRoomAPI.ts";
 import { getPlayerAPI } from "@/api/PlayerAPI.ts";
 import { Socket } from "socket.io-client";
+import { getSessionAPI } from "@/api/SessionAPI.ts";
 
 export const useWaitRoomStore = defineStore("wait_room", () => {
   const waitRoom = ref<WaitRoom>();
@@ -60,5 +61,29 @@ export const useSocketStore = defineStore("socket", () => {
     socket,
     setSocket,
     getSocket,
+  };
+});
+
+export const useSessionStore = defineStore("session", () => {
+  const session = ref<Session>();
+
+  const initSession = async (id: string) => {
+    const { data } = await getSessionAPI(id);
+    session.value = data;
+  };
+
+  const reloadSessionFromServer = async () => {
+    const { data } = await getSessionAPI(session.value!.id);
+    session.value = data;
+  };
+
+  const getSession = () => {
+    return session.value;
+  };
+
+  return {
+    initSession,
+    reloadSessionFromServer,
+    getSession,
   };
 });
