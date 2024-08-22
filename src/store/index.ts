@@ -3,10 +3,15 @@ import { ref } from "vue";
 import { getWaitRoomAPI } from "@/api/WaitRoomAPI.ts";
 import { getPlayerAPI } from "@/api/PlayerAPI.ts";
 import { Socket } from "socket.io-client";
-import { getSessionAPI } from "@/api/SessionAPI.ts";
 
 export const useWaitRoomStore = defineStore("wait_room", () => {
-  const waitRoom = ref<WaitRoom>();
+  const waitRoom = ref<WaitRoom>({
+    id: "",
+    player_1_id: "",
+    player_2_id: "",
+    status: "",
+    room_name: "",
+  });
 
   const setWaitRoom = async (id: string) => {
     const { data } = await getWaitRoomAPI(id);
@@ -29,7 +34,16 @@ export const useWaitRoomStore = defineStore("wait_room", () => {
 });
 
 export const usePlayerStore = defineStore("player", () => {
-  const player = ref<Player>();
+  const player = ref<Player>({
+    id: "",
+    chosen_action: "",
+    chosen_card: "",
+    health_max: 0,
+    health_cur: 0,
+    nickname: "",
+    status: "",
+    rage: 0,
+  });
 
   const setPlayer = async (id: string) => {
     const { data } = await getPlayerAPI(id);
@@ -41,6 +55,7 @@ export const usePlayerStore = defineStore("player", () => {
   };
 
   return {
+    player,
     setPlayer,
     getPlayer,
   };
@@ -65,16 +80,19 @@ export const useSocketStore = defineStore("socket", () => {
 });
 
 export const useSessionStore = defineStore("session", () => {
-  const session = ref<Session>();
+  const session = ref<Session>({
+    player_me_id: "",
+    player_opponent_id: "",
+  });
 
-  const initSession = async (id: string) => {
-    const { data } = await getSessionAPI(id);
-    session.value = data;
+  const initSession = (player_me_id: string, player_opponent_id: string) => {
+    session.value.player_me_id = player_me_id;
+    session.value.player_opponent_id = player_opponent_id;
   };
 
-  const reloadSessionFromServer = async () => {
-    const { data } = await getSessionAPI(session.value!.id);
-    session.value = data;
+  const clearSession = () => {
+    session.value.player_me_id = "";
+    session.value.player_opponent_id = "";
   };
 
   const getSession = () => {
@@ -83,7 +101,7 @@ export const useSessionStore = defineStore("session", () => {
 
   return {
     initSession,
-    reloadSessionFromServer,
     getSession,
+    clearSession,
   };
 });

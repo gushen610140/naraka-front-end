@@ -38,20 +38,14 @@ export const updateStatusNetworkAPI = () => {
   });
 };
 
-export const updateAttackAPI = (
-  player_me_id: string,
-  player_opponent_id: string,
-  chosen_action: number,
-  session_id: string,
-) => {
+export const confirmActionAPI = (player_me_id: string, player_opponent_id: string, chosen_action: string) => {
   return http<boolean>({
-    url: "/player/attack",
+    url: "/player/confirm_action",
     method: "put",
     params: {
       player_me_id,
       player_opponent_id,
       chosen_action,
-      session_id,
     },
   });
 };
@@ -64,9 +58,9 @@ export const updateAttackNetWorkAPI = (player_status_result: PlayerStatusResult)
   });
 };
 
-export const attackComputeAPI = (session_id: string) => {
+export const executeAttackAPI = (session_id: string) => {
   return http<PlayerStatusResult>({
-    url: "/player/attack_compute",
+    url: "/player/execute_attack",
     method: "put",
     params: {
       session_id,

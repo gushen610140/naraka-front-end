@@ -5,8 +5,6 @@ import io from "socket.io-client";
 import { getPlayerAPI, updateStatusAPI, updateStatusNetworkAPI } from "@/api/PlayerAPI.ts";
 import { useToast } from "vue-toastification";
 import { changePage } from "@/utils/page.ts";
-import { addSessionAPI, getSessionByWaitRoomIdAPI } from "@/api/SessionAPI.ts";
-import { removeWaitRoomAPI } from "@/api/WaitRoomAPI.ts";
 
 const useWaitRoomInfo = () => {
   const waitRoom = computed(() => useWaitRoomStore().getWaitRoom());
@@ -76,33 +74,15 @@ const useSocket = () => {
 };
 
 const useButtonInfo = () => {
-  const button_1_text = computed(() => {
-    if (player_1.value?.status == "not ready") {
-      return "准备";
-    } else if (player_1.value?.status == "ready") {
-      return "取消准备";
-    } else {
-      return "等待中";
-    }
-  });
-  const button_2_text = computed(() => {
-    if (player_2.value?.status == "not ready") {
-      return "准备";
-    } else if (player_2.value?.status == "ready") {
-      return "取消准备";
-    } else {
-      return "等待中";
-    }
-  });
+  const button_1_text = ref("未准备");
+  const button_2_text = ref("未准备");
 
-  const button_1_disabled = computed(() => {
-    return usePlayerStore().getPlayer()?.id != player_1.value?.id;
-  });
-  const button_2_disabled = computed(() => {
-    return usePlayerStore().getPlayer()?.id != player_2.value?.id;
-  });
+  const button_1_disabled = ref(usePlayerStore().getPlayer().id != useWaitRoomStore().getWaitRoom().player_1_id);
+  const button_2_disabled = ref(usePlayerStore().getPlayer().id != useWaitRoomStore().getWaitRoom().player_2_id);
 
   const button_1_event = async () => {
+    button_1_text.value = "已锁定准备";
+    button_1_disabled.value = true;
     const status = player_1.value?.status == "not ready" ? "ready" : "not ready";
     await updateStatusAPI(player_1.value?.id as string, status);
     await flashPlayerInfoEvent();
@@ -111,6 +91,8 @@ const useButtonInfo = () => {
   };
 
   const button_2_event = async () => {
+    button_2_text.value = "已锁定准备";
+    button_2_disabled.value = true;
     const status = player_2.value?.status == "not ready" ? "ready" : "not ready";
     await updateStatusAPI(player_2.value?.id as string, status);
     await flashPlayerInfoEvent();
@@ -148,29 +130,12 @@ const useStartGame = () => {
     }
   };
 
-  const gameStart = async () => {
-    const createOrJoinSession = async () => {
-      const { data: session } = await getSessionByWaitRoomIdAPI(waitRoom.value!.id);
-      if (session == null) {
-        const { data: id } = await addSessionAPI(
-          waitRoom.value!.player_1_id,
-          waitRoom.value!.player_2_id,
-          waitRoom.value!.id,
-        );
-        await useSessionStore().initSession(id);
-      } else {
-        await useSessionStore().initSession(session.id);
-      }
-      await removeWaitRoomAPI(waitRoom.value!.id);
-      changePage("/game");
-    };
-
+  const gameStart = () => {
     if (player_1.value?.status == "ready" && player_2.value?.status == "ready") {
-      try {
-        await createOrJoinSession();
-      } catch (e) {
-        await createOrJoinSession();
-      }
+      const player_me_id = usePlayerStore().getPlayer()!.id;
+      const player_opponent_id = player_me_id == player_1.value.id ? player_2.value.id : player_1.value.id;
+      useSessionStore().initSession(player_me_id, player_opponent_id);
+      changePage("/game");
     }
   };
 
