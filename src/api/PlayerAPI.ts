@@ -57,3 +57,10 @@ export const removePlayerAPI = (id: string) => {
     params: { id },
   });
 };
+
+export const nextRoundNetworkAPI = async () => {
+  return http({
+    url: import.meta.env.VITE_SOCKET_API_SERVER + "/next_round",
+    method: "get",
+  });
+};

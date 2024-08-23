@@ -1,5 +1,5 @@
 <script lang="ts" setup>
-import { getWaitRoomListAPI, joinWaitRoomAPI } from "@/api/WaitRoomAPI.ts";
+import { getWaitRoomListAPI, joinWaitRoomAPI, joinWaitRoomNetWorkAPI } from "@/api/WaitRoomAPI.ts";
 import { computed, onMounted, ref } from "vue";
 import { changePage } from "@/utils/page.ts";
 import { useToast } from "vue-toastification";
@@ -66,6 +66,7 @@ const useJoinRoom = () => {
       const { data: player_2_id } = await addPlayerAPI(player_nickname.value);
       await usePlayerStore().setPlayer(player_2_id);
       await joinWaitRoomAPI(roomId.value, player_2_id);
+      await joinWaitRoomNetWorkAPI();
       await useWaitRoomStore().setWaitRoom(roomId.value);
       setTimeout(() => {
         loading.value = false;

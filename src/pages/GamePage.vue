@@ -1,8 +1,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue";
 import { usePlayerStore, useSessionStore, useSocketStore } from "@/store";
-import { confirmActionAPI, getPlayerAPI, removePlayerAPI } from "@/api/PlayerAPI.ts";
-import { nextRoundNetworkAPI } from "@/api/SessionAPI.ts";
+import { confirmActionAPI, getPlayerAPI, nextRoundNetworkAPI, removePlayerAPI } from "@/api/PlayerAPI.ts";
 import { changePage } from "@/utils/page.ts";
 
 const useSession = () => {

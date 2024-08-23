@@ -117,13 +117,7 @@ const useStartGame = () => {
   const checkReadyStatus = async () => {
     if (player_1.value?.status == "ready" && player_2.value?.status == "ready" && !isChecking.value) {
       isChecking.value = true;
-      useToast().info("双方已经准备，游戏将在三秒钟后开始", { timeout: 2000 });
-      setTimeout(() => {
-        useToast().info("双方已经准备，游戏将在两秒钟后开始", { timeout: 2000 });
-      }, 1000);
-      setTimeout(() => {
-        useToast().info("双方已经准备，游戏将在一秒钟后开始", { timeout: 2000 });
-      }, 2000);
+      useToast().info("双方已经准备，游戏将在三秒钟后开始", { timeout: 3000 });
       setTimeout(() => {
         isChecking.value = false;
         gameStart();

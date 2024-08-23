@@ -40,12 +40,19 @@ export const getWaitRoomListAPI = () => {
 
 export const joinWaitRoomAPI = (id: string, player_2_id: string) => {
   return http<string>({
-    url: import.meta.env.VITE_SOCKET_API_SERVER + "/join",
-    method: "PUT",
+    url: "/wait_room/join",
+    method: "put",
     params: {
       id,
       player_2_id,
     },
+  });
+};
+
+export const joinWaitRoomNetWorkAPI = () => {
+  return http<string>({
+    url: import.meta.env.VITE_SOCKET_API_SERVER + "/join",
+    method: "PUT",
   });
 };
 
