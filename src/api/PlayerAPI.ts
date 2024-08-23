@@ -50,20 +50,10 @@ export const confirmActionAPI = (player_me_id: string, player_opponent_id: strin
   });
 };
 
-export const updateAttackNetWorkAPI = (player_status_result: PlayerStatusResult) => {
+export const removePlayerAPI = (id: string) => {
   return http({
-    url: import.meta.env.VITE_SOCKET_API_SERVER + "/attack",
-    method: "put",
-    data: player_status_result,
-  });
-};
-
-export const executeAttackAPI = (session_id: string) => {
-  return http<PlayerStatusResult>({
-    url: "/player/execute_attack",
-    method: "put",
-    params: {
-      session_id,
-    },
+    url: "/player/remove",
+    method: "delete",
+    params: { id },
   });
 };

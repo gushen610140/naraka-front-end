@@ -54,10 +54,24 @@ export const usePlayerStore = defineStore("player", () => {
     return player.value;
   };
 
+  const clearPlayer = () => {
+    player.value = {
+      id: "",
+      chosen_action: "",
+      chosen_card: "",
+      health_max: 0,
+      health_cur: 0,
+      nickname: "",
+      status: "",
+      rage: 0,
+    };
+  };
+
   return {
     player,
     setPlayer,
     getPlayer,
+    clearPlayer,
   };
 });
 

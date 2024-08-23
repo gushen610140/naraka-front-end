@@ -1,7 +1,7 @@
 <script lang="ts" setup>
 import { computed, onMounted, ref } from "vue";
-import { useSessionStore, useSocketStore } from "@/store";
-import { confirmActionAPI, getPlayerAPI } from "@/api/PlayerAPI.ts";
+import { usePlayerStore, useSessionStore, useSocketStore } from "@/store";
+import { confirmActionAPI, getPlayerAPI, removePlayerAPI } from "@/api/PlayerAPI.ts";
 import { nextRoundNetworkAPI } from "@/api/SessionAPI.ts";
 import { changePage } from "@/utils/page.ts";
 
@@ -34,38 +34,10 @@ const usePlayerInfo = () => {
 const useSocket = () => {
   const socket = computed(() => useSocketStore().getSocket());
 
-  // socket.value!.on("attack", async (player_status_result: PlayerStatusResult) => {
-  //   if (player_status_result.player_1_damage_value == 0 && player_status_result.player_2_damage_value == 0) {
-  //     useToast().info("无事发生");
-  //   } else if (player_status_result.player_1_id == player_me.value!.id) {
-  //     if (player_status_result.player_1_damage_value > 0) {
-  //       useToast().error(`你受到了 ${player_status_result.player_1_damage_value} 点伤害`);
-  //     } else {
-  //       useToast().success(`你造成了 ${player_status_result.player_2_damage_value} 点伤害`);
-  //     }
-  //   } else {
-  //     if (player_status_result.player_2_damage_value > 0) {
-  //       useToast().error(`你受到了 ${player_status_result.player_2_damage_value} 点伤害`);
-  //     } else {
-  //       useToast().success(`你造成了 ${player_status_result.player_1_damage_value} 点伤害`);
-  //     }
-  //   }
-  //
-  //   await loadPlayerInfo();
-  //   setTimeout(() => {
-  //     loading.value = false;
-  //     isLock.value = false;
-  //   }, 500);
-  //
-  //   setTimeout(() => {
-  //     if (player_status_result.player_1_health_cur_value <= 0 || player_status_result.player_2_health_cur_value <= 0) {
-  //       isEnd.value = true;
-  //     }
-  //   }, 1000);
-  // });
-
   socket.value!.on("next_round", async () => {
     await loadPlayerInfo();
+    loading.value = false;
+    isLock.value = false;
     if (player_me.value!.health_cur <= 0 || player_opponent.value!.health_cur <= 0) {
       isEnd.value = true;
     }
@@ -81,12 +53,12 @@ const useActions = () => {
   const isLock = ref(false);
   const loading = ref(false);
 
-  const lockAttackEvent = async () => {
+  const confirmActionEvent = async () => {
     isLock.value = true;
+    loading.value = true;
     const { code } = await confirmActionAPI(player_me.value!.id, player_opponent.value!.id, action.value);
     if (code == 200) {
       await nextRoundNetworkAPI();
-      loading.value = true;
     }
   };
 
@@ -94,7 +66,7 @@ const useActions = () => {
     action,
     isLock,
     loading,
-    lockAttackEvent,
+    confirmActionEvent,
   };
 };
 
@@ -118,7 +90,10 @@ const useEnd = () => {
   });
 
   const gameEndEvent = () => {
+    removePlayerAPI(player_me.value!.id);
+    removePlayerAPI(player_opponent.value!.id);
     useSessionStore().clearSession();
+    usePlayerStore().clearPlayer();
     changePage("/");
   };
 
@@ -133,7 +108,7 @@ const useEnd = () => {
 const { session } = useSession();
 const {} = useSocket();
 const { player_me, player_opponent, loadPlayerInfo } = usePlayerInfo();
-const { action, isLock, loading, lockAttackEvent } = useActions();
+const { action, isLock, loading, confirmActionEvent } = useActions();
 const { isEnd, endTextTitle, endTextContent, gameEndEvent } = useEnd();
 
 onMounted(() => {
@@ -163,7 +138,7 @@ onMounted(() => {
     </v-card-item>
     <v-card-actions>
       <div class="flex-grow"></div>
-      <v-btn :disabled="isLock" :loading="loading" variant="tonal" @click="lockAttackEvent">锁定</v-btn>
+      <v-btn :disabled="isLock" :loading="loading" variant="tonal" @click="confirmActionEvent">锁定</v-btn>
     </v-card-actions>
   </v-card>
   <div class="flex-grow"></div>

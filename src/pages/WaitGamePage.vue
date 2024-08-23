@@ -5,6 +5,7 @@ import io from "socket.io-client";
 import { getPlayerAPI, updateStatusAPI, updateStatusNetworkAPI } from "@/api/PlayerAPI.ts";
 import { useToast } from "vue-toastification";
 import { changePage } from "@/utils/page.ts";
+import { removeWaitRoomAPI } from "@/api/WaitRoomAPI.ts";
 
 const useWaitRoomInfo = () => {
   const waitRoom = computed(() => useWaitRoomStore().getWaitRoom());
@@ -135,6 +136,7 @@ const useStartGame = () => {
       const player_me_id = usePlayerStore().getPlayer()!.id;
       const player_opponent_id = player_me_id == player_1.value.id ? player_2.value.id : player_1.value.id;
       useSessionStore().initSession(player_me_id, player_opponent_id);
+      removeWaitRoomAPI(waitRoom.value.id);
       changePage("/game");
     }
   };
