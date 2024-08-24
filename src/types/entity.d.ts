@@ -28,6 +28,12 @@ declare interface WaitRoom {
   room_name: string;
 }
 
+declare interface Card {
+  name: string;
+  effect: string;
+  intro: string;
+}
+
 declare interface RoundResult {
   oldPlayerMe: Player;
   oldPlayerOpponent: Player;

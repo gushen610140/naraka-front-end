@@ -5,6 +5,7 @@ import { confirmActionAPI, getPlayerAPI, nextRoundNetworkAPI, removePlayerAPI } 
 import { changePage } from "@/utils/page.ts";
 import { useToast } from "vue-toastification";
 import { actionNameToChinese } from "@/utils/GameLogic.ts";
+import { getCardListByPlayer } from "@/api/CardAPI.ts";
 
 const useSession = () => {
   const session = computed(() => useSessionStore().getSession());
@@ -79,7 +80,14 @@ const useSocket = () => {
     const chosen_action_me = actionNameToChinese(oldPlayerMe.chosen_action);
     const chosen_action_opponent = actionNameToChinese(oldPlayerOpponent.chosen_action);
     useToast().info(`你选择了 ${chosen_action_me}，对方选择了 ${chosen_action_opponent}`);
-    await loadPlayerInfo();
+    // 重新加载数据
+    try {
+      await loadCardList();
+      await loadPlayerInfo();
+    } catch (e) {
+      await loadCardList();
+      await loadPlayerInfo();
+    }
     loading.value = false;
     isLock.value = false;
     if (player_me.value!.health_cur <= 0 || player_opponent.value!.health_cur <= 0) {
@@ -149,6 +157,51 @@ const useEnd = () => {
   };
 };
 
+const useCard = () => {
+  const cardList = ref<Card[]>([]);
+  const cardSelect = ref<Card | null>();
+
+  const loadCardList = async () => {
+    const { data } = await getCardListByPlayer(player_me.value!.id);
+    cardList.value = data;
+  };
+
+  const changeCardSelectEvent = (index: number) => {
+    // TODO: Card 数组要带上一个id
+    console.log(index);
+  };
+
+  return {
+    cardList,
+    cardSelect,
+    loadCardList,
+    changeCardSelectEvent,
+  };
+};
+
+const useWheel = () => {
+  const wheelRef = ref<HTMLDivElement | null>(null);
+
+  const wheelEvent = (event: any) => {
+    if (!wheelRef.value) return;
+
+    const { scrollLeft, scrollWidth, clientWidth } = wheelRef.value;
+    const { deltaY } = event;
+    const maxScrollLeft = scrollWidth - clientWidth;
+    let left = scrollLeft + deltaY;
+
+    // 防止滚动超出边界
+    if ((deltaY < 0 && left >= 0) || (deltaY > 0 && left <= maxScrollLeft)) {
+      wheelRef.value.scrollLeft = left;
+    }
+  };
+
+  return {
+    wheelRef,
+    wheelEvent,
+  };
+};
+
 const useAnimation = () => {
   const suffer_harm_me = ref(false);
   const suffer_harm_opponent = ref(false);
@@ -168,10 +221,13 @@ const {} = useSocket();
 const { player_me, player_opponent, loadPlayerInfo } = usePlayerInfo();
 const { action, isLock, loading, confirmActionEvent } = useActions();
 const { isEnd, endTextTitle, endTextContent, gameEndEvent } = useEnd();
+const { cardList, cardSelect, loadCardList, changeCardSelectEvent } = useCard();
+const { wheelRef, wheelEvent } = useWheel();
 const { suffer_harm_me, suffer_harm_opponent, suffer_treat_me, suffer_treat_opponent } = useAnimation();
 
-onMounted(() => {
-  loadPlayerInfo();
+onMounted(async () => {
+  await loadPlayerInfo();
+  await loadCardList();
 });
 </script>
 
@@ -179,7 +235,7 @@ onMounted(() => {
   <v-card
     :class="{ suffer_harm: suffer_harm_opponent, suffer_treat: suffer_treat_opponent }"
     class="mt-10"
-    min-width="600"
+    width="1200"
   >
     <v-card-title>对手</v-card-title>
     <v-card-item>
@@ -192,13 +248,38 @@ onMounted(() => {
   <v-card variant="tonal">
     <v-card-title>选择攻击方式</v-card-title>
     <v-card-item>
-      <v-radio-group v-model="action" :disabled="isLock">
-        <v-radio label="轻击" value="flick"></v-radio>
-        <v-radio label="重击" value="pound"></v-radio>
-        <v-radio label="振刀" value="bounce"></v-radio>
-        <v-radio label="治愈" value="treat"></v-radio>
-        <v-radio label="怒气" value="rage"></v-radio>
-      </v-radio-group>
+      <div class="flex">
+        <v-radio-group v-model="action" :disabled="isLock">
+          <v-radio label="轻击" value="flick"></v-radio>
+          <v-radio label="重击" value="pound"></v-radio>
+          <v-radio label="振刀" value="bounce"></v-radio>
+          <v-radio label="治愈" value="treat"></v-radio>
+          <v-radio label="怒气" value="rage"></v-radio>
+        </v-radio-group>
+        <v-card class="ml-15" title="卡组" width="800">
+          <v-card-item>
+            <div ref="wheelRef" class="flex overflow-x-scroll gap-2 scroll-show" @wheel="wheelEvent">
+              <v-card
+                v-for="(cardItem, index) in cardList"
+                :class="{ card_select: cardSelect == index }"
+                :title="cardItem.name"
+                class="mb-4 cursor-pointer"
+                min-width="200"
+                @click="changeCardSelectEvent(index)"
+              >
+                <v-card-item>{{ cardItem.intro }}</v-card-item>
+              </v-card>
+            </div>
+          </v-card-item>
+          <v-card-item>
+            <div class="flex">
+              <div class="text-neutral-500">TIP: 按住 shift 可以拥有更丝滑的滚动体验</div>
+              <div class="flex-grow"></div>
+              <div>卡牌数量：{{ cardList.length }}</div>
+            </div>
+          </v-card-item>
+        </v-card>
+      </div>
     </v-card-item>
     <v-card-actions>
       <div class="flex-grow"></div>
@@ -206,7 +287,7 @@ onMounted(() => {
     </v-card-actions>
   </v-card>
   <div class="flex-grow"></div>
-  <v-card :class="{ suffer_harm: suffer_harm_me, suffer_treat: suffer_treat_me }" class="mb-10" min-width="600">
+  <v-card :class="{ suffer_harm: suffer_harm_me, suffer_treat: suffer_treat_me }" class="mb-10" width="1200">
     <v-card-title>我</v-card-title>
     <v-card-item>
       <div>昵称: {{ player_me?.nickname }}</div>
@@ -269,5 +350,20 @@ onMounted(() => {
   100% {
     background-color: transparent;
   }
+}
+
+.card_select {
+  box-shadow: 0 0 3rem #ffffff;
+}
+
+.scroll-show::-webkit-scrollbar {
+  display: block;
+  background-color: #aaa;
+  border-radius: 1rem;
+}
+.scroll-show::-webkit-scrollbar-thumb {
+  background-color: #1a1a1a;
+  border-radius: 1rem;
+  cursor: pointer;
 }
 </style>
