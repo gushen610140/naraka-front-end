@@ -27,3 +27,10 @@ declare interface WaitRoom {
   status: string;
   room_name: string;
 }
+
+declare interface RoundResult {
+  oldPlayerMe: Player;
+  oldPlayerOpponent: Player;
+  newPlayerMe: Player;
+  newPlayerOpponent: Player;
+}

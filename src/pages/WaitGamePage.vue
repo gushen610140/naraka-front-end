@@ -43,12 +43,11 @@ const useSocket = () => {
     const socket = io("ws://localhost");
 
     socket.on("connect", () => {
-      useToast().success("连接服务器成功", { timeout: 3000 });
       useSocketStore().setSocket(socket);
     });
 
     socket.on("player_update", async () => {
-      useToast().info("新玩家加入房间", { timeout: 3000 });
+      useToast().info("有玩家加入房间", { timeout: 3000 });
       try {
         await flashWaitRoomInfoEvent();
         await flashPlayerInfoEvent();
@@ -155,7 +154,7 @@ onMounted(() => {
 </script>
 
 <template>
-  <v-card :title="waitRoom?.room_name" min-width="600">
+  <v-card :title="waitRoom.room_name" min-width="600">
     <v-row>
       <v-col>
         <v-card class="ml-4" title="玩家1" variant="tonal">
@@ -180,6 +179,10 @@ onMounted(() => {
         </v-card>
       </v-col>
     </v-row>
+    <v-card-actions>
+      <div class="flex-grow"></div>
+      <v-btn variant="tonal" @click="useSocketStore().getSocket()!.emit('player_update')">刷新玩家信息</v-btn>
+    </v-card-actions>
   </v-card>
 </template>
 

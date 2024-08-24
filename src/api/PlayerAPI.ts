@@ -39,7 +39,7 @@ export const updateStatusNetworkAPI = () => {
 };
 
 export const confirmActionAPI = (player_me_id: string, player_opponent_id: string, chosen_action: string) => {
-  return http<boolean>({
+  return http<RoundResult>({
     url: "/player/confirm_action",
     method: "put",
     params: {
@@ -58,9 +58,10 @@ export const removePlayerAPI = (id: string) => {
   });
 };
 
-export const nextRoundNetworkAPI = async () => {
+export const nextRoundNetworkAPI = async (roundResult: RoundResult) => {
   return http({
     url: import.meta.env.VITE_SOCKET_API_SERVER + "/next_round",
-    method: "get",
+    method: "put",
+    data: roundResult,
   });
 };
