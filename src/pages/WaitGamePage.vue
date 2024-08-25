@@ -14,9 +14,15 @@ const useWaitRoomInfo = () => {
     await useWaitRoomStore().setWaitRoom(waitRoom.value?.id as string);
   };
 
+  const removeWaitRoomEvent = async () => {
+    await removeWaitRoomAPI(waitRoom.value.id);
+    await changePage("/");
+  };
+
   return {
     waitRoom,
     flashWaitRoomInfoEvent,
+    removeWaitRoomEvent,
   };
 };
 
@@ -25,10 +31,17 @@ const usePlayerInfo = () => {
   const player_2 = ref<Player>();
 
   const flashPlayerInfoEvent = async () => {
-    const { data: player_1_data } = await getPlayerAPI(waitRoom.value?.player_1_id as string);
-    const { data: player_2_data } = await getPlayerAPI(waitRoom.value?.player_2_id as string);
-    player_1.value = player_1_data;
-    player_2.value = player_2_data;
+    try {
+      const { data: player_1_data } = await getPlayerAPI(waitRoom.value?.player_1_id as string);
+      const { data: player_2_data } = await getPlayerAPI(waitRoom.value?.player_2_id as string);
+      player_1.value = player_1_data;
+      player_2.value = player_2_data;
+    } catch (e) {
+      const { data: player_1_data } = await getPlayerAPI(waitRoom.value?.player_1_id as string);
+      const { data: player_2_data } = await getPlayerAPI(waitRoom.value?.player_2_id as string);
+      player_1.value = player_1_data;
+      player_2.value = player_2_data;
+    }
   };
 
   return {
@@ -61,9 +74,11 @@ const useSocket = () => {
       try {
         await flashPlayerInfoEvent();
         await checkReadyStatus();
+        await flashButtonReadyEvent();
       } catch (e) {
         await flashPlayerInfoEvent();
         await checkReadyStatus();
+        await flashButtonReadyEvent();
       }
     });
   };
@@ -100,6 +115,15 @@ const useButtonInfo = () => {
     await checkReadyStatus();
   };
 
+  const flashButtonReadyEvent = async () => {
+    if (player_1.value?.status == "ready") {
+      button_1_text.value = "已锁定准备";
+    }
+    if (player_2.value?.status == "ready") {
+      button_2_text.value = "已锁定准备";
+    }
+  };
+
   return {
     button_1_text,
     button_2_text,
@@ -107,6 +131,7 @@ const useButtonInfo = () => {
     button_2_disabled,
     button_1_event,
     button_2_event,
+    flashButtonReadyEvent,
   };
 };
 
@@ -139,11 +164,18 @@ const useStartGame = () => {
   };
 };
 
-const { waitRoom, flashWaitRoomInfoEvent } = useWaitRoomInfo();
+const { waitRoom, flashWaitRoomInfoEvent, removeWaitRoomEvent } = useWaitRoomInfo();
 const { player_1, player_2, flashPlayerInfoEvent } = usePlayerInfo();
 const { createSocketConnection } = useSocket();
-const { button_1_text, button_2_text, button_1_disabled, button_2_disabled, button_1_event, button_2_event } =
-  useButtonInfo();
+const {
+  button_1_text,
+  button_2_text,
+  button_1_disabled,
+  button_2_disabled,
+  button_1_event,
+  button_2_event,
+  flashButtonReadyEvent,
+} = useButtonInfo();
 const { checkReadyStatus } = useStartGame();
 
 onMounted(() => {
@@ -181,6 +213,7 @@ onMounted(() => {
     </v-row>
     <v-card-actions>
       <div class="flex-grow"></div>
+      <v-btn variant="tonal" @click="removeWaitRoomEvent">解散房间</v-btn>
       <v-btn variant="tonal" @click="useSocketStore().getSocket()!.emit('player_update')">刷新玩家信息</v-btn>
     </v-card-actions>
   </v-card>

@@ -29,9 +29,18 @@ declare interface WaitRoom {
 }
 
 declare interface Card {
+  id: string;
   name: string;
-  effect: string;
   intro: string;
+  rage: number;
+  cn_name: string;
+}
+
+declare interface Action {
+  name: string;
+  value: number;
+  intro: string;
+  cn_name: string;
 }
 
 declare interface RoundResult {

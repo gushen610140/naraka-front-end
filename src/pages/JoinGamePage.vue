@@ -62,16 +62,29 @@ const useJoinRoom = () => {
   const joinRoomEvent = async (event: Promise<{ valid: boolean }>) => {
     const { valid } = await event;
     if (valid) {
-      loading.value = true;
-      const { data: player_2_id } = await addPlayerAPI(player_nickname.value);
-      await usePlayerStore().setPlayer(player_2_id);
-      await joinWaitRoomAPI(roomId.value, player_2_id);
-      await joinWaitRoomNetWorkAPI();
-      await useWaitRoomStore().setWaitRoom(roomId.value);
-      setTimeout(() => {
-        loading.value = false;
-        changePage("/wait_game");
-      }, 500);
+      try {
+        loading.value = true;
+        const { data: player_2_id } = await addPlayerAPI(player_nickname.value);
+        await usePlayerStore().setPlayer(player_2_id);
+        await joinWaitRoomAPI(roomId.value, player_2_id);
+        await joinWaitRoomNetWorkAPI();
+        await useWaitRoomStore().setWaitRoom(roomId.value);
+        setTimeout(() => {
+          loading.value = false;
+          changePage("/wait_game");
+        }, 500);
+      } catch (e) {
+        loading.value = true;
+        const { data: player_2_id } = await addPlayerAPI(player_nickname.value);
+        await usePlayerStore().setPlayer(player_2_id);
+        await joinWaitRoomAPI(roomId.value, player_2_id);
+        await joinWaitRoomNetWorkAPI();
+        await useWaitRoomStore().setWaitRoom(roomId.value);
+        setTimeout(() => {
+          loading.value = false;
+          changePage("/wait_game");
+        }, 500);
+      }
     }
   };
 

@@ -38,7 +38,12 @@ export const updateStatusNetworkAPI = () => {
   });
 };
 
-export const confirmActionAPI = (player_me_id: string, player_opponent_id: string, chosen_action: string) => {
+export const confirmActionAPI = (
+  player_me_id: string,
+  player_opponent_id: string,
+  chosen_action: string,
+  chosen_card: string | undefined,
+) => {
   return http<RoundResult>({
     url: "/player/confirm_action",
     method: "put",
@@ -46,6 +51,7 @@ export const confirmActionAPI = (player_me_id: string, player_opponent_id: strin
       player_me_id,
       player_opponent_id,
       chosen_action,
+      chosen_card,
     },
   });
 };

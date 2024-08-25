@@ -1,5 +1,9 @@
 import { router } from "@/router/index.ts";
 
-export const changePage = (page: string) => {
-  router.push(page);
+export const changePage = async (page: string) => {
+  try {
+    await router.push(page);
+  } catch (e) {
+    await router.push(page);
+  }
 };
