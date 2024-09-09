@@ -9,3 +9,5 @@ test commit info
 test different email
 
 test different username
+
+it is a test for new computer with no name and email, let's see what will happen now
