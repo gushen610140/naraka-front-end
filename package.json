@@ -12,13 +12,17 @@
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "electron": "electron .",
-    "start": "concurrently \"npm run dev\" \"npm run electron\""
+    "start": "electron-forge start",
+    "package": "electron-forge package",
+    "make": "electron-forge make",
+    "pack": "electron-builder --dir",
+    "dist": "electron-builder"
   },
   "dependencies": {
     "autoprefixer": "^10.4.20",
     "axios": "^1.7.2",
     "concurrently": "^8.2.2",
-    "electron": "^31.4.0",
+    "electron-squirrel-startup": "^1.0.1",
     "element-plus": "^2.7.7",
     "path": "^0.12.7",
     "pinia": "^2.2.2",
@@ -32,11 +36,20 @@
     "vuetify": "^3.7.0"
   },
   "devDependencies": {
+    "@electron-forge/cli": "^7.4.0",
+    "@electron-forge/maker-deb": "^7.4.0",
+    "@electron-forge/maker-rpm": "^7.4.0",
+    "@electron-forge/maker-squirrel": "^7.4.0",
+    "@electron-forge/maker-zip": "^7.4.0",
+    "@electron-forge/plugin-auto-unpack-natives": "^7.4.0",
+    "@electron-forge/plugin-fuses": "^7.4.0",
+    "@electron/fuses": "^1.8.0",
     "@mdi/font": "^7.4.47",
     "@types/node": "^20.14.12",
     "@vitejs/plugin-vue": "^5.0.5",
     "autoprefixer": "^10.4.20",
     "electron": "^31.2.1",
+    "electron-builder": "^24.13.3",
     "postcss": "^8.4.41",
     "prettier": "^3.3.3",
     "tailwindcss": "^3.4.10",
@@ -45,5 +58,33 @@
     "unplugin-vue-components": "^0.27.3",
     "vite": "^5.3.4",
     "vue-tsc": "^2.0.24"
+  },
+  "build": {
+    "appId": "naraka",
+    "productName": "naraka",
+    "files": [
+      "dist/**/*",
+      "electron/**/*"
+    ],
+    "directories": {
+      "buildResources": "assets",
+      "output": "electron-dist"
+    },
+    "win": {
+      "target": ["nsis"],
+      "icon": "build/icon.ico"
+    },
+    "mac": {
+      "category": "public.app-category.utilities"
+    },
+    "nsis": {
+      "oneClick": false,
+      "allowElevation": true,
+      "deleteAppDataOnUninstall": true,
+      "allowToChangeInstallationDirectory": true,
+      "createDesktopShortcut": true,
+      "createStartMenuShortcut": true,
+      "shortcutName": "测试文档项目"
+    }
   }
 }

@@ -53,7 +53,8 @@ const usePlayerInfo = () => {
 
 const useSocket = () => {
   const createSocketConnection = () => {
-    const socket = io("ws://localhost");
+    const socket = io(import.meta.env.VITE_SOCKET_SERVER);
+    useSocketStore().setSocket(socket);
 
     socket.on("connect", () => {
       useSocketStore().setSocket(socket);

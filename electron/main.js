@@ -4,14 +4,14 @@ const path = require("path");
 const createWindow = () => {
   const win = new BrowserWindow({
     width: 1440,
-    height: 960,
+    height: 1080,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
       webSecurity: false, // 前端跨域
     },
   });
 
-  win.loadURL("http://localhost:3000");
+  win.loadURL(`file://${path.join(__dirname, "../dist/index.html")}`);
 };
 
 app.whenReady().then(() => {

@@ -307,7 +307,7 @@ const useHistory = () => {
   const round = ref(1);
 
   const writeHistory = (message: string) => {
-    historyList.value.push(`第${round.value}回合：${message}`);
+    historyList.value.unshift(`第${round.value}回合：${message}`);
   };
 
   return {
