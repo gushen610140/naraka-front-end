@@ -200,7 +200,6 @@ const useEnd = () => {
     useSessionStore().clearSession();
     usePlayerStore().clearPlayer();
     changePage("/");
-    location.reload();
   };
 
   return {

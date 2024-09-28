@@ -8,7 +8,7 @@
   "description": "simple naraka",
   "type": "commonjs",
   "scripts": {
-    "dev": "vite",
+    "dev": "concurrently \"vite .\" \"electron .\" \"electron .\"",
     "build": "vue-tsc -b && vite build",
     "preview": "vite preview",
     "electron": "electron .",

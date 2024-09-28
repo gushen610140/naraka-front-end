@@ -3,7 +3,7 @@ const path = require("path");
 
 const createWindow = () => {
   const win = new BrowserWindow({
-    width: 1440,
+    width: 1920,
     height: 1080,
     webPreferences: {
       preload: path.join(__dirname, "preload.js"),
@@ -11,7 +11,8 @@ const createWindow = () => {
     },
   });
 
-  win.loadURL(`file://${path.join(__dirname, "../dist/index.html")}`);
+  win.loadURL("http://localhost:3000")
+  // win.loadURL(`file://${path.join(__dirname, "../dist/index.html")}`);
 };
 
 app.whenReady().then(() => {
